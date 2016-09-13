@@ -5,6 +5,7 @@ const program = require('commander');
 
 program
   .option('-p, --path <path>', 'Specify path to start from')
+  .option('--dev', 'Include devDependencies')
   .parse(process.argv);
 
 function isNotDependencyDirectory(file) {
@@ -12,10 +13,15 @@ function isNotDependencyDirectory(file) {
 }
 
 function executeShrinkwrap(file) {
-  console.log('Calling shrinkwrap on', file);
   shell.cd(path.dirname(file));
   shell.exec('npm install');
-  shell.exec('npm shrinkwrap --dev'); 
+
+  let shrinkwrapCommand = 'npm shrinkwrap';
+  if(program.dev) {
+    shrinkwrapCommand += ' --dev';
+  }
+  console.log(`Calling ${shrinkwrapCommand} on`, file);
+  shell.exec(shrinkwrapCommand); 
 }
 
 glob(
